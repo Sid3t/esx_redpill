@@ -8,6 +8,7 @@ local numberAdded = false
 local firstMissionDone = false
 local firstMissionStarted = false
 local firstMissionIntroDone = false
+local firstMissionInit = false
 
 --- Shows the GUI
 -- Not extracted to functions.lua because it uses local vars
@@ -181,14 +182,13 @@ end
 
 --- Loop for the first mission
 function _firstMissionLoop()
-    while true do
+    firstMissionInit = true
+    while firstMissionInit do
         Citizen.Wait(0)
-        if (not numberAdded and not firstMissionDone) then
-            if not firstMissionStarted and math.random(0, 100) == 50 then
-                TriggerEvent('esx_phone:addSpecialContact', blockedContact.name, blockedContact.number, blockedContact.base64Icon)
-                numberAdded = true
+        if not numberAdded and not firstMissionDone then
+            if not firstMissionStarted then
                 firstMissionStarted = true
-            elseif firstMissionStarted then
+            elseif firstMissionStarted and not numberAdded then
                 TriggerEvent('esx_phone:addSpecialContact', blockedContact.name, blockedContact.number, blockedContact.base64Icon)
                 numberAdded = true
             end
@@ -198,6 +198,9 @@ function _firstMissionLoop()
                     _U('mission_1_msg_text_start'), -- message
                     "CHAR_BLOCKED", 1) -- contact photo, symbol
             firstMissionIntroDone = true
+        end
+        if firstMissionDone then
+            firstMissionInit = false 
         end
     end
 end
